@@ -1,12 +1,17 @@
 // ==UserScript==
-// @name         Log_Power_Clicker
+// @name         Log Power Clicker
 // @namespace    makeappsgreat
 // @version      2025-07-25
-// @description  치지직 통나무 파워 자동 클릭
+// @description  치지직 통나무 파워 자동 클릭 사용자 스크립트
 // @author       makeappsgreat
+// @homepage     https://github.com/makeAppsGreat/Log-Power-Clicker
+// @updateURL    https://github.com/makeAppsGreat/Log-Power-Clicker/raw/refs/heads/main/Log_Power_Clicker.user.js
+// @downloadURL  https://github.com/makeAppsGreat/Log-Power-Clicker/raw/refs/heads/main/Log_Power_Clicker.user.js
 // @match        https://chzzk.naver.com/*
+// @match        https://game.naver.com/profile
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=chzzk.naver.com
-// @grant        none
+// @grant        GM_setValue
+// @grant        GM_getValue
 // ==/UserScript==
 
 (function() {
@@ -14,10 +19,12 @@
     console.log("[통나무 파워 자동 클릭] Loaded at", new Date());
 
 
+    // @match https://chzzk.naver.com/*
     const LOCAL_STORAGE_NAME = "clicker_log";
+    const LOG_BUTTON_CLICKED = "Button clicked";
     const CHECK_INTERVAL_MS = 20 * 1000;
 
-    const storage = JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME)) ?? {};
+    const storage = GM_getValue(LOCAL_STORAGE_NAME, {});
     let uuid = null;
     let name = null;
     let powerLoggedAt = -1;
@@ -31,7 +38,7 @@
         }
 
         storage[uuid].log.push({time : Date.now(), details : details});
-        localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(storage));
+        GM_setValue(LOCAL_STORAGE_NAME, storage);
     }
 
 
@@ -40,8 +47,8 @@
         const button = document.querySelector("button.live_chatting_power_button__Ov3eJ");
         if (button) {
             button.click();
-            console.log("[통나무 파워 자동 클릭] Button clicked,", new Date());
-            pushLog("Button clicked");
+            console.log(`[통나무 파워 자동 클릭] ${LOG_BUTTON_CLICKED},`, new Date());
+            pushLog(LOG_BUTTON_CLICKED);
         }
     }, CHECK_INTERVAL_MS);
 
@@ -134,11 +141,79 @@
     });
 
 
+    // @match https://game.naver.com/profile
+    const profileObserver = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    if (node.classList?.contains("profile_common_container__2Q8-1")) {
+                        profileObserver.disconnect();
+                        console.debug("Clicker :: ProfileObserver stops observing.", window.location.href);
+
+                        // 자동 클릭한 마지막 ${count}개 파워 확인
+                        let count = 100;
+                        const wrapper = node.querySelector("div.channel_power_wrapper__1EP27").cloneNode(true);
+                        wrapper.querySelector("strong").textContent = `자동 클릭한 마지막 ${count}개 파워 확인`;
+                        wrapper.querySelector("p").textContent = '사용자 스크립트 "Log Power Clicker"에 의해 만들어진 영역 입니다.';
+
+                        const powerDiv = document.createElement("div");
+                        powerDiv.style.setProperty("margin-top", "30px");
+                        powerDiv.textContent = "불러오는 중...";
+
+                        const container = node.cloneNode(false);
+                        container.appendChild(wrapper);
+                        container.appendChild(powerDiv);
+
+                        node.parentElement.appendChild(container);
+                        setTimeout(() => {
+                            const listPower = [];
+
+                            Object.keys(storage).forEach(uuid => {
+                                const log = storage[uuid].log;
+                                log.forEach(log => {
+                                   if (log.details === LOG_BUTTON_CLICKED) listPower.push({time : log.time, uuid : uuid});
+                                });
+                            });
+                            listPower.sort((a, b) => b.time - a.time);
+
+
+                            const table = document.createElement("table");
+
+                            listPower.every(power => {
+                                const row = document.createElement("tr");
+                                const time = document.createElement("td");
+                                const name = document.createElement("td");
+
+                                time.className = "channel_power_item_information__1ulzG";
+                                time.style.setProperty("padding", "0.3em 1em");
+                                time.style.setProperty("text-align", "right");
+                                time.textContent = new Date(power.time);
+                                name.style.setProperty("padding", "0.3em 1em");
+                                name.appendChild(document.querySelector(`a[href="https://chzzk.naver.com/${power.uuid}"]`).cloneNode(true));
+
+                                row.appendChild(time);
+                                row.appendChild(name);
+                                table.appendChild(row);
+
+                                if (--count > 0) return true;
+                                else return false;
+                            });
+
+                            powerDiv.replaceChildren(table);
+                        }, 0);
+                    }
+                });
+            });
+    });
+
+
     // 페이지 이동 시, observer 등록
     function onUrlChange() {
         if (window.location.href.match(/live\/[a-z0-9]{32}/g)) {
             observer.observe(document.body, OBSERVER_CONFIG);
             console.debug("Clicker :: Observer starts observing.", window.location.href);
+        } else if (window.location.href.match(/#channel_power/)){
+            profileObserver.observe(document.body, OBSERVER_CONFIG);
+            console.debug("Clicker :: ProfileObserver starts observing.", window.location.href);
         }
     }
 
@@ -161,6 +236,6 @@
 
     // 사용하고 있는 localStorage 용량 확인
     const k = new Blob([LOCAL_STORAGE_NAME]).size;
-    const v = new Blob([localStorage.getItem(LOCAL_STORAGE_NAME)]).size;
+    const v = new Blob([JSON.stringify(GM_getValue(LOCAL_STORAGE_NAME, {}))]).size;
     console.debug("Clicker :: Local storage used :", Math.round((k + v) / 1024), "KB");
 })();
