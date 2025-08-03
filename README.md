@@ -3,12 +3,12 @@
 
 ## 기능
 * 20초마다 확인하여 "1시간 라이브 시청 후 인증하기" 버튼이 생기면 자동으로 클릭
-* 6분마다 확인하여 통나무 파워 획득 상태 확인 [^사진-1]
+* 6분마다 확인하여 통나무 파워 획득 상태 확인 [[사진 1]](#사진-1)
 * 라이브 시청 시작 시, 현재 내 통나무 파워 기록 (라이브 중 한 번)
-* 라이브 화면 하단에 로그 보기 버튼 생성 [^사진-2]
+* 라이브 화면 하단에 로그 보기 버튼 생성 [[사진 2]](#사진-2)
     * 자동으로 클릭된 "1시간 라이브 시청 후 인증하기" 시각 확인
     * 라이브 시청 시작 시, 기록된 내 통나무 파워 및 시각 확인
-* 네이버 게임 프로필의 [내 통나무 파워](https://game.naver.com/profile#channel_power)에서 자동 클릭한 마지막 100개 파워 확인 [^사진-3]
+* 네이버 게임 프로필의 [내 통나무 파워](https://game.naver.com/profile#channel_power)에서 자동 클릭한 마지막 100개 파워 확인 [[사진 3]](#사진-3)
 
 ## 설치 방법
 1. 확장프로그램 Tampermonkey 설치
@@ -32,6 +32,15 @@
 > [!WARNING]
 > 사용 중 발생하는 문제는 게시자가 책임지지 않습니다.
 
-[^사진-1]: ![사진 1](../blob/main/images/power_status.png?raw=true)
-[^사진-2]: ![사진 2](../blob/main/images/log_button.png?raw=true)
-[^사진-3]: ![사진 3](../blob/main/images/channel_power.png?raw=true)
+## 미리 보기
+#### 사진 1
+![파워 획득 상태](images/power_status.png)
+<p align="center"><sub>파워 획득 상태</sub></p>
+
+#### 사진 2
+![로그 버튼 및 기록된 로그](images/log_button.png)
+<p align="center"><sub>로그 버튼 및 기록된 로그</sub></p>
+
+#### 사진 3
+![자동 클릭한 마지막 100개 파워](images/channel_power.png)
+<p align="center"><sub>자동 클릭한 마지막 100개 파워</sub></p>
