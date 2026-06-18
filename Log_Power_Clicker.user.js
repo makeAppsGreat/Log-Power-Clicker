@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Log Power Clicker
 // @namespace    makeappsgreat
-// @version      2025-08-03
+// @version      2026-06-18
 // @description  치지직 통나무 파워 자동 클릭 사용자 스크립트
 // @author       makeappsgreat
 // @homepage     https://github.com/makeAppsGreat/Log-Power-Clicker
@@ -42,7 +42,7 @@
     // @match https://chzzk.naver.com/*
     // 통나무 파워 자동 클릭
     setInterval(() => {
-        const button = document.querySelector("button.live_chatting_power_button__Ov3eJ");
+        const button = document.querySelector("button._button_3fvos_21");
         if (button) {
             button.click();
             console.log(`[통나무 파워 자동 클릭] ${LOG_BUTTON_CLICKED},`, new Date());
@@ -102,14 +102,14 @@
 
     const statusObserver = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
-            if (mutation.type === "characterData" && mutation.target.nodeValue.match(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/) && ["video_information_count__Y05sI", "live_information_player_count__87mHg"].includes(mutation.target.parentElement.className)) {
+            if (mutation.type === "characterData" && mutation.target.nodeValue.match(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/) && ["_count_1nl77_81", "_count_1ybo4_117"].includes(mutation.target.parentElement.className)) {
                 if (--gStatusIntervalLeft % 3 === 0) updateIntervalLeft();
             } else {
                 mutation.addedNodes.forEach(node => {
                     let information = null;
 
-                    if (node.classList?.contains("video_information_game__18XV7")) information = node.parentElement.querySelector("div.video_information_data__w3P\\+x"); // 좁은 화면
-                    else if (node.classList?.contains("live_information_player_information__STq4v")) information = node.querySelector("div.live_information_player_view__rlaKw"); // 넓은 화면
+                    if (node.classList?.contains("_game_1nl77_48")) information = node.parentElement.querySelector("div._data_1nl77_68"); // 좁은 화면
+                    else if (node.classList?.contains("_information_1ybo4_86")) information = node.querySelector("div._view_1ybo4_110"); // 넓은 화면
 
                     if (information) {
                         powerStatusSpan = information.querySelector("span").cloneNode(false);
@@ -129,15 +129,15 @@
     const DOWN_D = "M5 6.5L8 9.5L11 6.5";
     const UP_D = "M5 9.5L8 6.5L11 9.5";
     function appendLogButton() {
-        const innerLogDiv = document.querySelector("div.footer_button_container__H4Vqs").cloneNode(true);
+        const innerLogDiv = document.querySelector("div._container_k1gn9_1").cloneNode(true);
         const innerLogButton = innerLogDiv.querySelector("button");
         innerLogButton.firstChild.textContent = "로그보기";
 
         const logDiv = document.createElement("div");
-        logDiv.className = "live_information_box__ATJVO";
+        logDiv.className = "_box_1qjld_67";
         logDiv.appendChild(innerLogDiv);
 
-        const information = document.querySelector("div.live_information_area__4ssHl");
+        const information = document.querySelector("div._area_1qjld_54");
         information.appendChild(logDiv);
 
         innerLogButton.addEventListener("click", () => {
@@ -148,7 +148,7 @@
                 const table = document.createElement("table");
                 const tableDiv = document.createElement("div");
                 table.style.setProperty("margin", "0 auto");
-                tableDiv.className = "live_information_box__ATJVO";
+                tableDiv.className = "_box_1qjld_67";
                 tableDiv.appendChild(table);
                 information.appendChild(tableDiv);
 
@@ -181,7 +181,7 @@
     const logButtonObserver = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
             mutation.addedNodes.forEach(node => {
-                if (node.classList?.contains("live_information_area__4ssHl")) appendLogButton();
+                if (node.classList?.contains("_area_1qjld_54")) appendLogButton();
             });
         });
     });
@@ -191,7 +191,7 @@
     const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
-                    if (node.classList?.contains("live_chatting_area__hUPJw")) {
+                    if (node.classList?.contains("_area_1qgfi_49")) {
                         observer.disconnect();
                         console.debug("Clicker :: Observer stops observing.", window.location.href);
 
@@ -264,13 +264,13 @@
     const profileObserver = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
-                    if (node.classList?.contains("profile_common_container__2Q8-1")) {
+                    if (node.classList?.contains("_container_x6duu_73")) {
                         profileObserver.disconnect();
                         console.debug("Clicker :: The profile observer stops observing.", window.location.href);
 
                         // 자동 클릭한 마지막 ${count}개 파워 확인
                         let count = 100;
-                        const wrapper = node.querySelector("div.channel_power_wrapper__1EP27").cloneNode(true);
+                        const wrapper = node.querySelector("div._wrapper_xg8tv_2").cloneNode(true);
                         wrapper.querySelector("strong").textContent = `자동 클릭한 마지막 ${count}개 파워 확인`;
                         wrapper.querySelector("p").textContent = '사용자 스크립트 "Log Power Clicker"에 의해 만들어진 영역 입니다.';
 
@@ -287,7 +287,7 @@
                         setTimeout(() => {
                             const keys = GM_listValues();
                             const listPower = [];
-                            const table = document.createElement("table");
+                            const ol = document.createElement("ol");
 
                             keys.splice(keys.findIndex(item => item === OLD_USERSCRIPT_STORAGE_NAME), 1);
                             keys.forEach(uuid => {
@@ -298,26 +298,28 @@
                             });
                             listPower.sort((a, b) => b.time - a.time);
                             listPower.every(power => {
-                                const row = document.createElement("tr");
-                                const time = document.createElement("td");
-                                const name = document.createElement("td");
+                                const row = document.createElement("li");
+                                const time = document.createElement("div");
+                                const name = document.createElement("a");
 
-                                time.className = "channel_power_item_information__1ulzG";
+                                time.className = "_power_10ddf_34";
                                 time.style.setProperty("padding", "0.3em 1em");
                                 time.style.setProperty("text-align", "right");
                                 time.textContent = new Date(power.time);
+                                name.className = "_link_10ddf_1";
                                 name.style.setProperty("padding", "0.3em 1em");
                                 name.appendChild(document.querySelector(`a[href="https://chzzk.naver.com/${power.uuid}"]`).cloneNode(true));
 
+                                row.className = "_item_xg8tv_26";
                                 row.appendChild(time);
                                 row.appendChild(name);
-                                table.appendChild(row);
+                                ol.appendChild(row);
 
                                 if (--count > 0) return true;
                                 else return false;
                             });
 
-                            powerDiv.replaceChildren(table);
+                            powerDiv.replaceChildren(ol);
                         }, 0);
                     }
                 });
