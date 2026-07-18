@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Log Power Clicker
 // @namespace    makeappsgreat
-// @version      2026-06-18
+// @version      2026-07-17
 // @description  치지직 통나무 파워 자동 클릭 사용자 스크립트
 // @author       makeappsgreat
 // @homepage     https://github.com/makeAppsGreat/Log-Power-Clicker
@@ -42,7 +42,7 @@
     // @match https://chzzk.naver.com/*
     // 통나무 파워 자동 클릭
     setInterval(() => {
-        const button = document.querySelector("button._button_3fvos_21");
+        const button = document.querySelector("button._button_1v78k_21");
         if (button) {
             button.click();
             console.log(`[통나무 파워 자동 클릭] ${LOG_BUTTON_CLICKED},`, new Date());
@@ -102,14 +102,21 @@
 
     const statusObserver = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
-            if (mutation.type === "characterData" && mutation.target.nodeValue.match(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/) && ["_count_1nl77_81", "_count_1ybo4_117"].includes(mutation.target.parentElement.className)) {
+            if (mutation.type === "characterData"
+                && mutation.target.nodeValue.match(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/) // HH:MM:SS
+                && ["_count_13ugb_83", "_count_hiv0f_117"].includes(mutation.target.parentElement.className) // span, "<uptime> 스트리밍 중"
+               ) {
                 if (--gStatusIntervalLeft % 3 === 0) updateIntervalLeft();
             } else {
                 mutation.addedNodes.forEach(node => {
                     let information = null;
 
-                    if (node.classList?.contains("_game_1nl77_48")) information = node.parentElement.querySelector("div._data_1nl77_68"); // 좁은 화면
-                    else if (node.classList?.contains("_information_1ybo4_86")) information = node.querySelector("div._view_1ybo4_110"); // 넓은 화면
+                    // 좁은 화면
+                    if (node.classList?.contains("_game_13ugb_48")) // em, (현재 카테고리)
+                        information = node.parentElement.querySelector("div._data_13ugb_70"); // div, information <span> to append
+                    // 넓은 화면
+                    else if (node.classList?.contains("_information_hiv0f_86")) // div, (방송 정보)
+                        information = node.querySelector("div._view_hiv0f_110"); // div, viewership 및 uptime <span>의 부모 요소
 
                     if (information) {
                         powerStatusSpan = information.querySelector("span").cloneNode(false);
@@ -129,15 +136,15 @@
     const DOWN_D = "M5 6.5L8 9.5L11 6.5";
     const UP_D = "M5 9.5L8 6.5L11 9.5";
     function appendLogButton() {
-        const innerLogDiv = document.querySelector("div._container_k1gn9_1").cloneNode(true);
+        const innerLogDiv = document.querySelector("div._container_f0ab_1").cloneNode(true); // div, 더보기 <button>의 부모 요소
         const innerLogButton = innerLogDiv.querySelector("button");
         innerLogButton.firstChild.textContent = "로그보기";
 
         const logDiv = document.createElement("div");
-        logDiv.className = "_box_1qjld_67";
+        logDiv.className = "_box_1tswz_67"; // div, 더보기 <button>의 부모 요소의 부모 요소
         logDiv.appendChild(innerLogDiv);
 
-        const information = document.querySelector("div._area_1qjld_54");
+        const information = document.querySelector("div._area_1tswz_54"); // div, 더보기 <button>의 부모 요소의 부모 요소의 부모 요소
         information.appendChild(logDiv);
 
         innerLogButton.addEventListener("click", () => {
@@ -148,7 +155,7 @@
                 const table = document.createElement("table");
                 const tableDiv = document.createElement("div");
                 table.style.setProperty("margin", "0 auto");
-                tableDiv.className = "_box_1qjld_67";
+                tableDiv.className = logDiv.className
                 tableDiv.appendChild(table);
                 information.appendChild(tableDiv);
 
@@ -181,7 +188,7 @@
     const logButtonObserver = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
             mutation.addedNodes.forEach(node => {
-                if (node.classList?.contains("_area_1qjld_54")) appendLogButton();
+                if (node.classList?.contains("_area_1tswz_54")) appendLogButton(); // 더보기 <button>의 부모 요소의 부모 요소의 부모 요소 classname, aka "const information"
             });
         });
     });
@@ -191,7 +198,7 @@
     const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
-                    if (node.classList?.contains("_area_1qgfi_49")) {
+                    if (node.classList?.contains("_area_b8csn_49")) { // div, 채팅 입력 <pre>를 포함하고 있는
                         observer.disconnect();
                         console.debug("Clicker :: Observer stops observing.", window.location.href);
 
@@ -264,7 +271,7 @@
     const profileObserver = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
-                    if (node.classList?.contains("_container_x6duu_73")) {
+                    if (node.classList?.contains("_container_1x91p_74")) { // div, 채널별 통나무 파워
                         profileObserver.disconnect();
                         console.debug("Clicker :: The profile observer stops observing.", window.location.href);
 
