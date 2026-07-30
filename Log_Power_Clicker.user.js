@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Log Power Clicker
 // @namespace    makeappsgreat
-// @version      2026-07-17
+// @version      2026-07-30
 // @description  치지직 통나무 파워 자동 클릭 사용자 스크립트
 // @author       makeappsgreat
 // @homepage     https://github.com/makeAppsGreat/Log-Power-Clicker
@@ -104,7 +104,7 @@
         mutations.forEach(mutation => {
             if (mutation.type === "characterData"
                 && mutation.target.nodeValue.match(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/) // HH:MM:SS
-                && ["_count_13ugb_83", "_count_hiv0f_117"].includes(mutation.target.parentElement.className) // span, "<uptime> 스트리밍 중"
+                && ["_count_r3ltp_83", "_count_1x5za_117"].includes(mutation.target.parentElement.className) // span, "<uptime> 스트리밍 중"
                ) {
                 if (--gStatusIntervalLeft % 3 === 0) updateIntervalLeft();
             } else {
@@ -112,11 +112,11 @@
                     let information = null;
 
                     // 좁은 화면
-                    if (node.classList?.contains("_game_13ugb_48")) // em, (현재 카테고리)
-                        information = node.parentElement.querySelector("div._data_13ugb_70"); // div, information <span> to append
+                    if (node.classList?.contains("_game_r3ltp_48")) // em, (현재 카테고리)
+                        information = node.parentElement.querySelector("div._data_r3ltp_70"); // div, information <span> to append
                     // 넓은 화면
-                    else if (node.classList?.contains("_information_hiv0f_86")) // div, (방송 정보)
-                        information = node.querySelector("div._view_hiv0f_110"); // div, viewership 및 uptime <span>의 부모 요소
+                    else if (node.classList?.contains("_information_1x5za_86")) // div, (방송 정보)
+                        information = node.querySelector("div._view_1x5za_110"); // div, viewership 및 uptime <span>의 부모 요소
 
                     if (information) {
                         powerStatusSpan = information.querySelector("span").cloneNode(false);
