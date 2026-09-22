@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Log Power Clicker
 // @namespace    makeappsgreat
-// @version      2026-08-18
+// @version      2026-09-22
 // @description  치지직 통나무 파워 자동 클릭 사용자 스크립트
 // @author       makeappsgreat
 // @homepage     https://github.com/makeAppsGreat/Log-Power-Clicker
@@ -113,9 +113,9 @@
                     let information = null;
 
                     // 좁은 화면
-                    if (node.className.includes("_game_")) /* em, (현재 카테고리) */ information = node.parentElement.querySelector("div[class*='_data_']"); // div, information <span> to append
+                    if (typeof node.className === "string" && node.className.includes("_game_")) /* em, (현재 카테고리) */ information = node.parentElement.querySelector("div[class*='_data_']"); // div, information <span> to append
                     // 넓은 화면
-                    else if (node.className.includes("_information_")) /* div, (방송 정보) */ information = node.querySelector("div[class*='_view_']"); // div, viewership 및 uptime <span>의 부모 요소
+                    else if (typeof node.className === "string" && node.className.includes("_information_")) /* div, (방송 정보) */ information = node.querySelector("div[class*='_view_']"); // div, viewership 및 uptime <span>의 부모 요소
 
                     if (information) {
                         powerStatusSpan = information.querySelector("span").cloneNode(false);
@@ -135,15 +135,16 @@
     const DOWN_D = "M5 6.5L8 9.5L11 6.5";
     const UP_D = "M5 9.5L8 6.5L11 9.5";
     function appendLogButton() {
-        const innerLogDiv = document.querySelector("div._container_f0ab_1").cloneNode(true); // div, 더보기 <button>의 부모 요소
+        const showMoreButton = [...document.querySelectorAll("button[class*='_container_']")].find(button => button.textContent.trim().endsWith("더보기"))
+        const innerLogDiv = showMoreButton.parentElement.cloneNode(true); // div, 더보기 <button>의 부모 요소
         const innerLogButton = innerLogDiv.querySelector("button");
         innerLogButton.firstChild.textContent = "로그보기";
 
         const logDiv = document.createElement("div");
-        logDiv.className = "_box_1tswz_67"; // div, 더보기 <button>의 부모 요소의 부모 요소
+        logDiv.className = showMoreButton.parentElement.parentElement.className; // div, 더보기 <button>의 부모 요소의 부모 요소
         logDiv.appendChild(innerLogDiv);
 
-        const information = document.querySelector("div._area_1tswz_54"); // div, 더보기 <button>의 부모 요소의 부모 요소의 부모 요소
+        const information = [...document.querySelectorAll("div[class*='_area_']")].find(div => div.textContent.trim().endsWith("더보기")); // div, 더보기 <button>의 부모 요소의 부모 요소의 부모 요소
         information.appendChild(logDiv);
 
         innerLogButton.addEventListener("click", () => {
