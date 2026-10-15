@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Log Power Clicker
 // @namespace    makeappsgreat
-// @version      2026-09-22
+// @version      2026-10-15
 // @description  치지직 통나무 파워 자동 클릭 사용자 스크립트
 // @author       makeappsgreat
 // @homepage     https://github.com/makeAppsGreat/Log-Power-Clicker
@@ -195,10 +195,12 @@
 
 
     // 페이지 이동 후, 초기화를 위한 옵저버
+    const selector = ":is(textarea, pre)[class*='_input_'][placeholder*='채팅']"
     const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
-                    if (node.classList?.contains("_area_b8csn_49")) { // div, 채팅 입력 <pre>를 포함하고 있는
+                    const ready = node instanceof Element ? node.matches(selector) ? node : node.querySelector(selector) : null;
+                    if (ready) { // div, 채팅 입력 <textarea> 포함하고 있는 또는 pre
                         observer.disconnect();
                         console.debug("Clicker :: Observer stops observing.", window.location.href);
 
